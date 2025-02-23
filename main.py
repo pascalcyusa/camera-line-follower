@@ -26,12 +26,12 @@ GPIO.setup(in3, GPIO.OUT)
 GPIO.setup(in4, GPIO.OUT)
 
 # Initialize motor PWM
-motor1 = GPIO.PWM(ena1, 50)
+motor1 = GPIO.PWM(ena1, 100)
 motor2 = GPIO.PWM(ena2, 100)
 
 # Motor speed
 speed_1 = 14
-speed_2 = 25
+speed_2 = 14
 
 # Start motors at 0 speed
 motor1.start(0)
