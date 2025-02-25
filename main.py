@@ -37,14 +37,6 @@ speed_4 = 20
 speed_5 = 16
 speed_6 = 16
 
-# # WORKING Motor speed
-# speed_1 = 18
-# speed_2 = 18
-# speed_3 = 20
-# speed_4 = 20
-# speed_5 = 16
-# speed_6 = 16
-
 # Start motors at 0 speed
 motor1.start(0)
 motor2.start(0)
@@ -64,22 +56,11 @@ def move_forward():
     GPIO.output(in3, GPIO.LOW)
     GPIO.output(in4, GPIO.HIGH)
 
-
-def move_slow():
-    motor1.ChangeDutyCycle(speed_5)
-    motor2.ChangeDutyCycle(speed_6)
-    GPIO.output(in1, GPIO.HIGH)
-    GPIO.output(in2, GPIO.LOW)
-    GPIO.output(in3, GPIO.LOW)
-    GPIO.output(in4, GPIO.HIGH)
-
-
 def stop():
     GPIO.output(in1, GPIO.LOW)
     GPIO.output(in2, GPIO.LOW)
     GPIO.output(in3, GPIO.LOW)
     GPIO.output(in4, GPIO.LOW)
-
 
 def turn_right():
     motor1.ChangeDutyCycle(speed_3)
@@ -89,7 +70,6 @@ def turn_right():
     GPIO.output(in3, GPIO.LOW)
     GPIO.output(in4, GPIO.HIGH)
 
-
 def turn_left():
     motor1.ChangeDutyCycle(speed_3)
     motor2.ChangeDutyCycle(speed_4)
@@ -97,7 +77,6 @@ def turn_left():
     GPIO.output(in2, GPIO.LOW)
     GPIO.output(in3, GPIO.HIGH)
     GPIO.output(in4, GPIO.LOW)
-
 
 def move_backward():
     motor1.ChangeDutyCycle(speed_5)
@@ -107,19 +86,26 @@ def move_backward():
     GPIO.output(in3, GPIO.HIGH)
     GPIO.output(in4, GPIO.LOW)
 
+
+# Define color range for line detection (adjust these values for your specific color)
+lower_color = np.array([5, 200, 50])  # Lower HSV threshold
+upper_color = np.array([10, 255, 70])  # Upper HSV threshold
+
 # === Main Loop for Line Following ===
 try:
     while True:
-        # Capture image
+    # Capture image from camera
         image = picam2.capture_array("main")
-
-        # Crop region of interest
+        image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        cv2.imshow('img', image_rgb)
+        
+        # Crop the image
         crop_img = image[60:120, 0:160]
-
-        # Convert to grayscale
+	
+        # # Convert to grayscale
         gray = cv2.cvtColor(crop_img, cv2.COLOR_BGR2GRAY)
 
-        # Apply Gaussian blur
+        # # Apply Gaussian blur
         blur = cv2.GaussianBlur(gray, (5,5), 0)
 
         # Apply thresholding
@@ -145,17 +131,17 @@ try:
 
                 # Determine movement
                 if cx >= 120:
-                    print("Turn Left!")
-                    turn_left()
+                    print("Turn Right!")
+                    turn_right()
                 elif 50 < cx < 120:
                     print("On Track!")
                     move_forward()
                 elif cx <= 50:
-                    print("Turn Right!")
-                    turn_right()
+                    print("Turn Left!")
+                    turn_left()
             else:
                 print("Centroid calculation error, retrying...")
-                move_slow()
+                move_backward()
 
         else:
             print("No line detected, stopping")
@@ -163,7 +149,7 @@ try:
 
         # Display the processed frame
         cv2.imshow("Camera View", crop_img)
-        cv2.waitKey(1)
+        cv2.waitKey(2)
 
 except KeyboardInterrupt:
     print("Stopping...")
