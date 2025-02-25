@@ -30,8 +30,20 @@ motor1 = GPIO.PWM(ena1, 100)
 motor2 = GPIO.PWM(ena2, 100)
 
 # Motor speed
-speed_1 = 14
-speed_2 = 14
+speed_1 = 20
+speed_2 = 20
+speed_3 = 20
+speed_4 = 20
+speed_5 = 16
+speed_6 = 16
+
+# # WORKING Motor speed
+# speed_1 = 18
+# speed_2 = 18
+# speed_3 = 20
+# speed_4 = 20
+# speed_5 = 16
+# speed_6 = 16
 
 # Start motors at 0 speed
 motor1.start(0)
@@ -52,26 +64,47 @@ def move_forward():
     GPIO.output(in3, GPIO.LOW)
     GPIO.output(in4, GPIO.HIGH)
 
+
+def move_slow():
+    motor1.ChangeDutyCycle(speed_5)
+    motor2.ChangeDutyCycle(speed_6)
+    GPIO.output(in1, GPIO.HIGH)
+    GPIO.output(in2, GPIO.LOW)
+    GPIO.output(in3, GPIO.LOW)
+    GPIO.output(in4, GPIO.HIGH)
+
+
 def stop():
     GPIO.output(in1, GPIO.LOW)
     GPIO.output(in2, GPIO.LOW)
     GPIO.output(in3, GPIO.LOW)
     GPIO.output(in4, GPIO.LOW)
 
+
 def turn_right():
-    motor1.ChangeDutyCycle(speed_1)
-    motor2.ChangeDutyCycle(speed_2)
+    motor1.ChangeDutyCycle(speed_3)
+    motor2.ChangeDutyCycle(speed_4)
     GPIO.output(in1, GPIO.LOW)
-    GPIO.output(in2, GPIO.LOW)
+    GPIO.output(in2, GPIO.HIGH)
     GPIO.output(in3, GPIO.LOW)
     GPIO.output(in4, GPIO.HIGH)
 
+
 def turn_left():
-    motor1.ChangeDutyCycle(speed_1)
-    motor2.ChangeDutyCycle(speed_2)
+    motor1.ChangeDutyCycle(speed_3)
+    motor2.ChangeDutyCycle(speed_4)
     GPIO.output(in1, GPIO.HIGH)
     GPIO.output(in2, GPIO.LOW)
-    GPIO.output(in3, GPIO.LOW)
+    GPIO.output(in3, GPIO.HIGH)
+    GPIO.output(in4, GPIO.LOW)
+
+
+def move_backward():
+    motor1.ChangeDutyCycle(speed_5)
+    motor2.ChangeDutyCycle(speed_6)
+    GPIO.output(in1, GPIO.LOW)
+    GPIO.output(in2, GPIO.HIGH)
+    GPIO.output(in3, GPIO.HIGH)
     GPIO.output(in4, GPIO.LOW)
 
 # === Main Loop for Line Following ===
@@ -122,11 +155,11 @@ try:
                     turn_right()
             else:
                 print("Centroid calculation error, retrying...")
-                stop()
+                move_slow()
 
         else:
             print("No line detected, stopping")
-            stop()
+            move_backward()
 
         # Display the processed frame
         cv2.imshow("Camera View", crop_img)
